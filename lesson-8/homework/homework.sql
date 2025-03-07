@@ -322,3 +322,137 @@ WHERE Departments.DepartmentName = 'Marketing';
 SELECT Orders.OrderID, Products.ProductName
 FROM Orders
 INNER JOIN Products ON Orders.OrderDate <= Products.ReleaseDate;
+
+--Updating
+
+-- Creating the database
+CREATE DATABASE CompanyDB;
+USE CompanyDB;
+
+-- Table for customers
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY IDENTITY(1,1),
+    CustomerName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255),
+    Phone VARCHAR(50)
+);
+
+INSERT INTO Customers (CustomerName, Email, Phone) VALUES
+('John Doe', 'john@example.com', '123-456-7890'),
+('Jane Smith', 'jane@example.com', '987-654-3210'),
+('Michael Brown', 'michael@example.com', '555-234-5678'),
+('Emily Davis', 'emily@example.com', '777-888-9999'),
+('David Wilson', 'david@example.com', '111-222-3333'),
+('Sophia Martinez', 'sophia@example.com', '444-555-6666'),
+('Daniel Anderson', 'daniel@example.com', '999-000-1111'),
+('Olivia Thomas', 'olivia@example.com', '222-333-4444');
+
+-- Table for orders (One to Many with Customers)
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY IDENTITY(1,1),
+    CustomerID INT,
+    OrderDate DATE,
+    OrderAmount DECIMAL(10,2) CHECK (OrderAmount >= 0),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+INSERT INTO Orders (CustomerID, OrderDate, OrderAmount) VALUES
+(1, '2024-03-01', 250.00),
+(2, '2024-03-02', 100.00),
+(3, '2024-03-03', 500.00),
+(4, '2024-03-04', 750.00),
+(5, '2024-03-05', 1200.00),
+(6, '2024-03-06', 300.00),
+(7, '2024-03-07', 450.00),
+(8, '2024-03-08', 900.00);
+
+-- Table for employees
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeName VARCHAR(255) NOT NULL,
+    DepartmentID INT,
+    Salary DECIMAL(10,2) CHECK (Salary >= 0),
+    HireDate DATE
+);
+
+INSERT INTO Employees (EmployeeName, DepartmentID, Salary, HireDate) VALUES
+('Alice Johnson', 1, 5500.00, '2020-01-15'),
+('Bob Williams', 2, 4800.00, '2019-06-10'),
+('Charlie Carter', 3, 6000.00, '2018-09-20'),
+('Diana Ross', 1, 7000.00, '2017-05-30'),
+('Edward Collins', 2, 6500.00, '2016-11-22'),
+('Fiona Scott', 3, 7200.00, '2015-08-14'),
+('George Harris', 1, 5800.00, '2019-12-01'),
+('Hannah Lewis', 2, 4900.00, '2021-04-10');
+
+-- Table for employee details (One to One with Employees)
+CREATE TABLE EmployeeDetails (
+    EmployeeID INT PRIMARY KEY,
+    Address VARCHAR(255),
+    BirthDate DATE,
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+INSERT INTO EmployeeDetails (EmployeeID, Address, BirthDate) VALUES
+(1, '123 Main St, City A', '1990-05-20'),
+(2, '456 Maple Ave, City B', '1985-09-10'),
+(3, '789 Oak St, City C', '1988-07-15'),
+(4, '321 Pine St, City D', '1979-04-05'),
+(5, '654 Birch St, City E', '1992-11-30'),
+(6, '987 Cedar St, City F', '1983-06-25'),
+(7, '159 Walnut St, City G', '1995-02-18'),
+(8, '753 Spruce St, City H', '1987-08-09');
+
+-- Table for departments
+CREATE TABLE Departments (
+    DepartmentID INT PRIMARY KEY IDENTITY(1,1),
+    DepartmentName VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Departments (DepartmentName) VALUES
+('HR'),
+('IT'),
+('Finance'),
+('Marketing');
+
+-- Table for products
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY IDENTITY(1,1),
+    ProductName VARCHAR(255) NOT NULL,
+    CategoryID INT,
+    SupplierID INT,
+    Price DECIMAL(10,2) CHECK (Price >= 0)
+);
+
+INSERT INTO Products (ProductName, CategoryID, SupplierID, Price) VALUES
+('Laptop', 1, 1, 1200.00),
+('Phone', 1, 2, 800.00),
+('Tablet', 1, 3, 600.00),
+('Desk', 2, 4, 300.00),
+('Chair', 2, 5, 150.00),
+('Monitor', 1, 6, 400.00),
+('Keyboard', 1, 7, 100.00),
+('Mouse', 1, 8, 50.00);
+
+-- Updating missing tasks and queries
+-- Task 10: ON clause with <>
+SELECT * FROM Customers C 
+INNER JOIN Orders O ON C.CustomerID <> O.CustomerID;
+
+-- Task 18: ON clause with >=
+SELECT * FROM Products P 
+INNER JOIN Orders O ON P.ProductID >= O.OrderID;
+
+-- Task 24: Employees with more than 5 years in the company
+SELECT * FROM Employees E 
+INNER JOIN Departments D ON E.DepartmentID = D.DepartmentID 
+WHERE DATEDIFF(YEAR, HireDate, GETDATE()) > 5;
+
+-- Task 26: CROSS JOIN filtering suppliers by category
+SELECT * FROM Products P 
+CROSS JOIN Suppliers S 
+WHERE P.CategoryID = 1;
+
+-- Task 30: ON clause with <=
+SELECT * FROM Orders O 
+INNER JOIN Customers C ON O.OrderID <= C.CustomerID;
